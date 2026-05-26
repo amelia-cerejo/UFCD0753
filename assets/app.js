@@ -73,6 +73,7 @@ const topics = [
     area: "Base de dados",
     intro: "Reconhecer a base de dados como estrutura organizada para armazenar e consultar informação.",
     image: "../assets/img/ufcd3776-hero-background-v2.png",
+    gammaUrl: "https://caracteristicas-bd-85q6xh3.gamma.site/",
     url: "conteudos/bd-caracteristicas.html"
   },
   {
@@ -83,6 +84,7 @@ const topics = [
     area: "Base de dados",
     intro: "Identificar benefícios e limitações da utilização de bases de dados.",
     image: "../assets/img/ufcd3776-hero-background-v2.png",
+    gammaUrl: "https://vant-desvant-bd-grd4fq1.gamma.site/",
     url: "conteudos/bd-vantagens-desvantagens.html"
   },
   {
@@ -93,6 +95,7 @@ const topics = [
     area: "Base de dados",
     intro: "Compreender, de forma simples, como os dados são guardados, ligados e consultados.",
     image: "../assets/img/ufcd3776-hero-background-v2.png",
+    gammaUrl: "https://modo-funcionamento-bd-z57d5a7.gamma.site/",
     url: "conteudos/bd-funcionamento.html"
   },
   {
@@ -103,6 +106,7 @@ const topics = [
     area: "Base de dados",
     intro: "Identificar tabelas, registos, campos e relações simples entre dados.",
     image: "../assets/img/ufcd3776-hero-background-v2.png",
+    gammaUrl: "https://componentes-bd-tciwsxb.gamma.site/",
     url: "conteudos/bd-componentes.html"
   },
   {
@@ -113,6 +117,7 @@ const topics = [
     area: "Base de dados",
     intro: "Reconhecer cuidados básicos de atualização, organização, segurança e consistência dos dados.",
     image: "../assets/img/ufcd3776-hero-background-v2.png",
+    gammaUrl: "https://manutencao-bd-eq5ecqa.gamma.site/",
     url: "conteudos/bd-manutencao.html"
   },
   {
@@ -123,6 +128,7 @@ const topics = [
     area: "Base de dados",
     intro: "Compreender formas simples de disponibilizar conteúdos de uma base de dados em contexto digital.",
     image: "../assets/img/ufcd3776-hero-background-v2.png",
+    gammaUrl: "https://publicacao-bd-fsf2qmd.gamma.site/",
     url: "conteudos/bd-internet.html"
   }
 ];
@@ -282,32 +288,40 @@ const evaluations = [
     url: "atividades/resultados-diagnostica.html"
   },
   {
-    id: "avaliacao-formativa",
-    title: "Avaliação Formativa",
-    menuTitle: "Formativa",
-    intro: "Espaço preparado para acompanhar a aprendizagem ao longo da UFCD.",
-    url: "atividades/avaliacao-formativa.html"
+    id: "avaliacao-sumativa",
+    title: "Avaliação Sumativa",
+    menuTitle: "Sumativa",
+    intro: "Espaço preparado para a avaliação final das aprendizagens da UFCD.",
+    url: "atividades/avaliacao-sumativa.html",
+    embedUrl: "https://avaliacoes-formacao.netlify.app/ufcd-3776/01-sumativa.html",
+    embedTitle: "Avaliação Sumativa"
   },
   {
     id: "autoavaliacao-final",
     title: "Autoavaliação Final",
     menuTitle: "Autoavaliação",
     intro: "Espaço preparado para reflexão final sobre competências adquiridas.",
-    url: "atividades/autoavaliacao-final.html"
+    url: "atividades/autoavaliacao-final.html",
+    embedUrl: "https://avaliacoes-formacao.netlify.app/ufcd-3776/04-autoavaliacao-final.html",
+    embedTitle: "Autoavaliação Final"
   },
   {
     id: "avaliacao-entre-pares",
     title: "Avaliação Entre Pares",
     menuTitle: "Entre Pares",
     intro: "Espaço preparado para avaliação entre pares.",
-    url: "atividades/avaliacao-entre-pares.html"
+    url: "atividades/avaliacao-entre-pares.html",
+    embedUrl: "https://avaliacoes-formacao.netlify.app/ufcd-3776/03-entre-pares.html",
+    embedTitle: "Avaliação Entre Pares"
   },
   {
     id: "avaliacao-formacao",
     title: "Avaliação da Formação",
     menuTitle: "Formação",
     intro: "Espaço preparado para avaliação da formação.",
-    url: "atividades/avaliacao-formacao.html"
+    url: "atividades/avaliacao-formacao.html",
+    embedUrl: "https://avaliacoes-formacao.netlify.app/avaliacao-formacao.html",
+    embedTitle: "Avaliação da Qualidade da Formação"
   }
 ];
 
@@ -483,12 +497,32 @@ const resources = [
     title: "Ficheiros",
     intro: "Ficheiros de apoio à prática com folha de cálculo, organizados pela ordem de disponibilização.",
     url: "recursos/excel-ficheiros.html",
+    videos: [
+      {
+        id: "dominar-folha-calculo",
+        title: "Dominar a Folha de Cálculo",
+        description: "Vídeo introdutório para consolidar conceitos e procedimentos essenciais da folha de cálculo.",
+        path: "assets/videos/Dominar_a_Folha_de_Cálculo.mp4"
+      },
+      {
+        id: "desmistificar-formulas-excel",
+        title: "Desmistificar Fórmulas no Excel",
+        description: "Vídeo de apoio para rever a lógica das fórmulas e reduzir dúvidas frequentes.",
+        path: "assets/videos/Desmistificar_Fórmulas_Excel.mp4"
+      }
+    ],
     downloadFiles: [
       {
         id: "bem-vindo-excel",
         title: "Bem-vindo ao Excel",
         description: "Ficheiro introdutório para exploração inicial da folha de cálculo.",
         path: "assets/ficheiros/excel/Bem vindo ao Excel.xlsx"
+      },
+      {
+        id: "novo-bem-vindo-excel",
+        title: "Novo Bem-vindo ao Excel",
+        description: "Nova versão do ficheiro introdutório para exploração inicial da folha de cálculo.",
+        path: "assets/ficheiros/excel/Novo Bem-vindo ao Excel.xlsx"
       },
       {
         id: "tutorial-formulas",
@@ -513,6 +547,12 @@ const resources = [
         title: "Tutorial de Tabela Dinâmica",
         description: "Apoio à organização e análise de dados com tabela dinâmica.",
         path: "assets/ficheiros/excel/Tutorial de Tabela Dinâmica.xlsx"
+      },
+      {
+        id: "extrato-2026-identificadores-matriculas",
+        title: ".CSV",
+        description: "Ficheiro CSV para atividade prática com dados de identificadores e matrículas alterados.",
+        path: "assets/ficheiros/excel/EXTRACTO_2026_01_identificadores_matriculas_alterados.csv"
       }
     ]
   },
@@ -551,7 +591,7 @@ const siteVisibility = {
   atividades: Object.fromEntries(activities.map((activity) => [activity.id, true])),
   avaliacao: Object.fromEntries(evaluations.map((evaluation) => [evaluation.id, true])),
   recursos: Object.fromEntries(resources.map((resource) => [resource.id, true])),
-  ficheirosExcel: Object.fromEntries(resources.flatMap((resource) => resource.downloadFiles || []).map((file) => [file.id, true])),
+  ficheirosExcel: Object.fromEntries(resources.flatMap((resource) => [...(resource.videos || []), ...(resource.downloadFiles || [])]).map((file) => [file.id, true])),
   assistentesGpt: Object.fromEntries(resources.filter((resource) => resource.gptUrl).map((resource) => [resource.id, true])),
   tarefasGrupo: Object.fromEntries(groupTasks.map((task) => [task.title, true])),
   tarefasIndividuais: Object.fromEntries(individualTasks.map((task) => [task.title, true]))
@@ -642,7 +682,7 @@ function obterConstituicaoVisibilidadeSite() {
   resources.forEach((resource, index) => adicionarItem("recursos", `recurso-${resource.id}`, resource.title, resource.url, "recurso", 41 + index));
 
   adicionarSecao("ficheirosExcel");
-  resources.flatMap((resource) => resource.downloadFiles || []).forEach((file, index) => adicionarItem("ficheirosExcel", `ficheiro-excel-${file.id}`, file.title, file.path, "ficheiro_excel", 45.1 + index));
+  resources.flatMap((resource) => [...(resource.videos || []), ...(resource.downloadFiles || [])]).forEach((file, index) => adicionarItem("ficheirosExcel", `ficheiro-excel-${file.id}`, file.title, file.path, file.path.endsWith(".mp4") ? "video_excel" : "ficheiro_excel", 45.1 + index));
 
   adicionarSecao("assistentesGpt");
   resources.filter((resource) => resource.gptUrl).forEach((resource, index) => adicionarItem("assistentesGpt", `assistente-gpt-${resource.id}`, resource.title, resource.gptUrl, "assistente_gpt", 48.1 + index));
@@ -1177,7 +1217,7 @@ function renderSiteVisibilityControls() {
   const activityItems = activities.map((activity) => ({ key: activity.id, label: activity.menuTitle || activity.title }));
   const evaluationItems = evaluations.map((evaluation) => ({ key: evaluation.id, label: evaluation.menuTitle || evaluation.title }));
   const resourceItems = resources.map((resource) => ({ key: resource.id, label: resource.title }));
-  const excelFileItems = resources.flatMap((resource) => resource.downloadFiles || []).map((file) => ({ key: file.id, label: file.title }));
+  const excelFileItems = resources.flatMap((resource) => [...(resource.videos || []), ...(resource.downloadFiles || [])]).map((file) => ({ key: file.id, label: file.title }));
   const gptItems = resources.filter((resource) => resource.gptUrl).map((resource) => ({ key: resource.id, label: resource.title }));
   const groupItems = groupTasks.map((task) => ({ key: task.title, label: task.title }));
   const individualItems = individualTasks.map((task) => ({ key: task.title, label: task.title }));
@@ -1650,6 +1690,7 @@ function renderTopicPage() {
 
   const topic = topicById(document.body.dataset.topic) || topics[0];
   const gammaDisponivel = Boolean(topic.gammaUrl && isItemVisible("conteudos", topic.id));
+  document.body.classList.toggle("gamma-view", gammaDisponivel);
   document.title = `UFCD 3776 | ${topic.title}`;
   document.querySelectorAll("#submenu-conteudos a").forEach((link) => {
     const active = link.getAttribute("href")?.endsWith(topic.url);
@@ -2065,8 +2106,9 @@ function renderResourcePage() {
     return;
   }
 
-  if (resource.downloadFiles) {
-    const visibleFiles = resource.downloadFiles.filter((file) => isItemVisible("ficheirosExcel", file.id));
+  if (resource.downloadFiles || resource.videos) {
+    const visibleVideos = (resource.videos || []).filter((video) => isItemVisible("ficheirosExcel", video.id));
+    const visibleFiles = (resource.downloadFiles || []).filter((file) => isItemVisible("ficheirosExcel", file.id));
     root.innerHTML = `
       <section class="section task-page-section">
         <div class="section-inner">
@@ -2075,6 +2117,27 @@ function renderResourcePage() {
             <h1>${resource.title}</h1>
             <p class="lead">${resource.intro}</p>
           </div>
+
+          ${visibleVideos.length ? `
+            <div class="video-resource-list">
+              ${visibleVideos.map((video) => {
+                const videoUrl = `${getBasePath()}${video.path}`;
+                return `
+                  <article class="card video-resource-card">
+                    <div>
+                      <p class="eyebrow">Vídeo</p>
+                      <h3>${video.title}</h3>
+                      <p>${video.description}</p>
+                    </div>
+                    <video class="resource-video" controls preload="metadata">
+                      <source src="${videoUrl}" type="video/mp4">
+                      O teu navegador não permite reproduzir este vídeo.
+                    </video>
+                  </article>
+                `;
+              }).join("")}
+            </div>
+          ` : ""}
 
           <div class="download-resource-list">
             ${visibleFiles.length ? visibleFiles.map((file, index) => {

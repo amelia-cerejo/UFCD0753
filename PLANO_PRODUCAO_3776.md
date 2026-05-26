@@ -64,12 +64,10 @@ Antes de fechar qualquer material:
 - confirmar que nao foram acrescentados temas avancados;
 - rever se existe equilibrio entre explicacao, exemplo e pratica.
 
-## Ordem de producao sugerida
+## Estado final de producao
 
-1. Pagina-piloto de visao geral.
-2. Pagina de folha de calculo.
-3. Pagina de base de dados.
-4. Atividade pratica de folha de calculo.
-5. Atividade pratica de base de dados.
-6. Materiais de avaliacao.
-
+1. Site principal com conteudos, atividades, avaliacao e recursos.
+2. Conteudos Gamma incorporados nas paginas internas do site.
+3. Recursos de folha de calculo disponibilizados em ficheiros e videos.
+4. Avaliacoes incorporadas a partir do projeto `avaliacoes-formacao`.
+5. Publicacao final no Netlify para utilizacao atraves do Moodle.

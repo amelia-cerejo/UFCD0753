@@ -15,7 +15,7 @@ Isto significa:
 - nao acrescentar temas fora dos conteudos previstos;
 - manter a separacao entre folha de calculo e base de dados;
 - usar exemplos simples, praticos e diretamente ligados aos conteudos;
-- validar primeiro em `testes-propostas` antes de passar para paginas oficiais.
+- manter apenas materiais finais ou recursos diretamente uteis para a acao.
 
 ## Estrutura da pasta
 
@@ -24,8 +24,6 @@ Isto significa:
 - `atividades` - exercicios, tarefas e avaliacao.
 - `recursos` - materiais complementares autorizados.
 - `assets` - imagens, estilos e outros ficheiros visuais.
-- `testes-propostas` - paginas-piloto e propostas para revisao.
-- `tmp` - ficheiros temporarios de trabalho.
 
 ## Identidade visual
 
@@ -38,4 +36,3 @@ Isto significa:
 - `REFERENCIAL_3776.md` - conteudos oficiais a respeitar.
 - `IDENTIDADE_VISUAL_3776.md` - regras visuais da UFCD.
 - `PLANO_PRODUCAO_3776.md` - plano de organizacao e producao dos materiais.
-

@@ -50,13 +50,12 @@ Este ficheiro serve para ir acumulando decisões, pedidos e próximos passos, pa
 - O controlo interno não deve ficar acessível pelo site.
 - No site deve aparecer apenas `Partilha de ecrã`, como na UFCD 9950.
 - Página pública criada em `atividades/controlo-teams.html`.
-- Versão para incorporar/formador criada em `atividades/incorporar/controlo-teams.html`.
+- Página interna de formador consolidada em `controlo-site.html`.
 - A página pública controla apenas as partilhas de ecrã.
-- A versão incorporada foi alinhada com a estrutura da UFCD 9950: usa `teams-control-root`, carrega `assets/config.js` e é renderizada por uma função autónoma no `app.js`.
 - Controlo das partilhas de ecrã colocado no mesmo modelo da UFCD 9950:
   - página pública mostra a tabela de formandos sem botões;
-  - versão `atividades/incorporar/controlo-teams.html` fica preparada para registar partilhas;
-  - versão incorporada tem dois harmónios como a UFCD 9950: `Partilha de ecrã` e `Controlo do Site`;
+  - página `controlo-site.html` fica preparada para registar partilhas;
+  - página interna tem dois harmónios como a UFCD 9950: `Partilha de ecrã` e `Controlo do Site`;
   - o `Controlo do Site` fica preparado com todos os pontos do menu: menu principal, conteúdos, atividades, avaliação, recursos, tarefas de grupo e tarefas individuais;
   - tabela com nome do formando, número de partilhas, último registo, estado e ações;
   - usa a Web App da UFCD 9950 e o ficheiro de resultados das avaliações da UFCD 3776: `1-gQGEHiLdQDwOGjGQbl6chxHS1zpX8rA7uebkXlTVOY`.
@@ -85,13 +84,13 @@ Este ficheiro serve para ir acumulando decisões, pedidos e próximos passos, pa
   - TI 4: `https://fad.iefp.pt/mod/forum/discuss.php?d=52668`
   - TI 5: `https://fad.iefp.pt/mod/forum/discuss.php?d=52669`
 
-## Próximos passos
+## Estado final
 
-1. Confirmar os links reais para substituir em `moodle.html`:
+1. Links reais confirmados em `moodle.html`:
    - Padlet incorporado já atualizado: `https://padlet.com/embed/rtfi7zkz0pn3cyvj`;
    - Página de apoio Moodle já atualizada: `https://fad.iefp.pt/mod/page/view.php?id=394695`;
    - Site público Netlify já atualizado: `https://splendorous-paprenjak-ef70f0.netlify.app/`.
-2. Conteúdos Gamma já associados:
+2. Conteúdos Gamma associados nas páginas internas do site:
    - `Folha de cálculo: características`: `https://folha-de-calculo-066dcg6.gamma.site/`;
    - `Vantagens e desvantagens da folha de cálculo`: `https://vantagens-e-desvantagens-kq1blbj.gamma.site/`.
    - `Criar, gravar e editar uma folha de cálculo`: `https://criacao-gravacao-edicao-l9yfsfb.gamma.site/`.
@@ -99,6 +98,6 @@ Este ficheiro serve para ir acumulando decisões, pedidos e próximos passos, pa
    - Quando um conteúdo com Gamma associado é ativado no controlo, o Gamma ocupa a página inteira da área principal desse submenu.
    - Quando ainda não está ativado no controlo, a página mostra `Conteúdo para disponibilização`.
    - Nas páginas de conteúdos, o grupo ativo do menu abre automaticamente; clicar em `Conteúdos` volta ao percurso de aprendizagem no `index.html#conteudos`.
-3. Voltar ao controlo do site, especialmente à versão `atividades/incorporar/controlo-teams.html`.
-4. Preparar o controlo gradual das tarefas disponibilizadas pelo formador.
-5. Depois avançar para os restantes conteúdos da UFCD 3776.
+3. Avaliações finais incorporadas a partir do projeto `avaliacoes-formacao`.
+4. Recursos Excel atualizados com ficheiros de apoio, ficheiro CSV e vídeos.
+5. Limpeza final efetuada antes da publicação.
