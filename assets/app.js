@@ -7,7 +7,7 @@
     area: "Enquadramento",
     intro: "Apresentar a UFCD, os objetivos, a organização do percurso e o conceito-chave: configurar, proteger e produzir.",
     image: "../assets/img/ufcd0753-hero-background-v2.png",
-    gammaUrl: "",
+    gammaUrl: "https://1-sistemas-operativos-kntf7kj.gamma.site/",
     url: "conteudos/introducao.html"
   },
   {
