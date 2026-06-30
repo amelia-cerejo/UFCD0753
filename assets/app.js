@@ -1067,6 +1067,60 @@ function aplicarLinksDoSite(links) {
   if (!links || typeof links !== "object") return false;
   let alterou = false;
 
+  const obterCampo = (item, nomes) => {
+    if (!item || typeof item !== "object") return "";
+    const entradas = Object.entries(item);
+    const nomesNormalizados = nomes.map((nome) => nome.toLowerCase());
+    const entrada = entradas.find(([key]) => nomesNormalizados.includes(key.toLowerCase()));
+    return entrada ? entrada[1] : "";
+  };
+  const obterValorLink = (item) => obterCampo(item, ["url", "link", "href", "valor", "value", "linkValue", "ligacao", "ligação"]);
+  const obterChaveLink = (item) => obterCampo(item, ["key", "chave", "id", "linkKey", "titulo", "title", "tarefa"]);
+  const obterTipoLink = (item) => String(obterCampo(item, ["linkType", "tipo", "tipo_link", "secao", "seção", "categoria"])).toLowerCase();
+  const guardarForum = (key, value) => {
+    const novoValor = String(value || "");
+    const task = individualTasks.find((item) => item.id === key || item.title === key);
+    const chaves = task ? [task.id, task.title] : [key];
+    chaves.filter(Boolean).forEach((chave) => {
+      if (siteLinks.forums[chave] !== novoValor) {
+        siteLinks.forums[chave] = novoValor;
+        alterou = true;
+      }
+    });
+  };
+
+  if (Array.isArray(links)) {
+    links.forEach((item) => {
+      const tipo = obterTipoLink(item);
+      const key = obterChaveLink(item);
+      const value = obterValorLink(item);
+
+      if (!value) return;
+
+      if ((tipo.includes("gamma") || tipo.includes("conteudo")) && key in siteLinks.gammas) {
+        const novoValor = String(value || "");
+        if (siteLinks.gammas[key] !== novoValor) {
+          siteLinks.gammas[key] = novoValor;
+          alterou = true;
+        }
+      } else if (tipo.includes("gloss")) {
+        const novoValor = String(value || "");
+        if (siteLinks.glossaryUrl !== novoValor) {
+          siteLinks.glossaryUrl = novoValor;
+          alterou = true;
+        }
+      } else if (tipo.includes("forum") || tipo.includes("tarefa")) {
+        guardarForum(key, value);
+      }
+    });
+
+    return alterou;
+  }
+
+  if (Array.isArray(links.itens)) {
+    alterou = aplicarLinksDoSite(links.itens) || alterou;
+  }
+
   if (links.gammas && typeof links.gammas === "object") {
     Object.entries(links.gammas).forEach(([key, value]) => {
       if (key in siteLinks.gammas) {
@@ -1086,11 +1140,7 @@ function aplicarLinksDoSite(links) {
 
   if (links.forums && typeof links.forums === "object") {
     Object.entries(links.forums).forEach(([key, value]) => {
-      const novoValor = String(value || "");
-      if (siteLinks.forums[key] !== novoValor) {
-        siteLinks.forums[key] = novoValor;
-        alterou = true;
-      }
+      guardarForum(key, value);
     });
   }
 
@@ -1114,15 +1164,21 @@ function obterGlossarioUrl() {
 }
 
 function obterForumUrl(task) {
-  return siteLinks.forums[task.id] || task.forumUrl || "";
+  return siteLinks.forums[task.id] || siteLinks.forums[task.title] || task.forumUrl || "";
 }
 
 window.addEventListener("storage", (event) => {
-  if (event.key !== SITE_VISIBILITY_STORAGE_KEY || !event.newValue) return;
+  if (!event.newValue) return;
 
   try {
-    aplicarVisibilidadeDoSite(JSON.parse(event.newValue));
-    atualizarSuperficiesVisiveisDoSite();
+    if (event.key === SITE_VISIBILITY_STORAGE_KEY) {
+      aplicarVisibilidadeDoSite(JSON.parse(event.newValue));
+      atualizarSuperficiesVisiveisDoSite();
+    }
+
+    if (event.key === SITE_LINKS_STORAGE_KEY && aplicarLinksDoSite(JSON.parse(event.newValue))) {
+      atualizarSuperficiesVisiveisDoSite();
+    }
   } catch {
     // Mantém o estado atual se a alteração recebida não puder ser lida.
   }
@@ -1206,7 +1262,7 @@ async function carregarLinksRemotosDoSite() {
 
   try {
     const dados = await obterJsonAppsScript({ acao: "links_site" });
-    let links = dados?.links || dados?.dados || dados?.siteLinks || null;
+    let links = dados?.links || dados?.dados || dados?.siteLinks || dados?.itens || null;
 
     if (typeof links === "string") {
       links = JSON.parse(links);
@@ -1482,12 +1538,15 @@ async function setupTeamsControl(root) {
     }
   }
 
-  if (controlStatus) controlStatus.textContent = "A carregar visibilidade do site...";
-  const visibilidadeRemotaOk = await carregarVisibilidadeRemotaDoSite();
+  if (controlStatus) controlStatus.textContent = "A carregar visibilidade e ligações do site...";
+  const [visibilidadeRemotaOk, linksRemotosOk] = await Promise.all([
+    carregarVisibilidadeRemotaDoSite(),
+    carregarLinksRemotosDoSite()
+  ]);
   atualizarControlosVisibilidadeDoSite(root);
   if (controlStatus) {
-    controlStatus.textContent = visibilidadeRemotaOk
-      ? "Visibilidade carregada da configuração central."
+    controlStatus.textContent = visibilidadeRemotaOk || linksRemotosOk
+      ? "Visibilidade e ligações carregadas da configuração central."
       : "Alterações guardadas neste browser. A configuração central ainda não respondeu.";
   }
 
