@@ -7,7 +7,7 @@
     area: "Enquadramento",
     intro: "Apresentar a UFCD, os objetivos, a organização do percurso e o conceito-chave: configurar, proteger e produzir.",
     image: "../assets/img/ufcd0753-hero-background-v2.png",
-    gammaUrl: "https://1-sistemas-operativos-kntf7kj.gamma.site/",
+    gammaUrl: "",
     url: "conteudos/introducao.html"
   },
   {
@@ -1057,22 +1057,44 @@ function guardarVisibilidadeDoSite() {
 function carregarLinksDoSite() {
   try {
     const saved = JSON.parse(localStorage.getItem(SITE_LINKS_STORAGE_KEY) || "{}");
-    if (saved.gammas && typeof saved.gammas === "object") {
-      Object.entries(saved.gammas).forEach(([key, value]) => {
-        if (key in siteLinks.gammas) siteLinks.gammas[key] = String(value || "");
-      });
-    }
-    if (typeof saved.glossaryUrl === "string") {
-      siteLinks.glossaryUrl = saved.glossaryUrl;
-    }
-    if (saved.forums && typeof saved.forums === "object") {
-      Object.entries(saved.forums).forEach(([key, value]) => {
-        siteLinks.forums[key] = String(value || "");
-      });
-    }
+    aplicarLinksDoSite(saved);
   } catch {
     // Mantém os valores de base quando não é possível ler localStorage.
   }
+}
+
+function aplicarLinksDoSite(links) {
+  if (!links || typeof links !== "object") return false;
+  let alterou = false;
+
+  if (links.gammas && typeof links.gammas === "object") {
+    Object.entries(links.gammas).forEach(([key, value]) => {
+      if (key in siteLinks.gammas) {
+        const novoValor = String(value || "");
+        if (siteLinks.gammas[key] !== novoValor) {
+          siteLinks.gammas[key] = novoValor;
+          alterou = true;
+        }
+      }
+    });
+  }
+
+  if (typeof links.glossaryUrl === "string" && siteLinks.glossaryUrl !== links.glossaryUrl) {
+    siteLinks.glossaryUrl = links.glossaryUrl;
+    alterou = true;
+  }
+
+  if (links.forums && typeof links.forums === "object") {
+    Object.entries(links.forums).forEach(([key, value]) => {
+      const novoValor = String(value || "");
+      if (siteLinks.forums[key] !== novoValor) {
+        siteLinks.forums[key] = novoValor;
+        alterou = true;
+      }
+    });
+  }
+
+  return alterou;
 }
 
 function guardarLinksDoSite() {
@@ -1176,6 +1198,32 @@ async function guardarLinksRemotosDoSite() {
     });
   } catch {
     // Mantém a versão local se a ligação remota falhar.
+  }
+}
+
+async function carregarLinksRemotosDoSite() {
+  if (!APPS_SCRIPT_WEB_APP_URL) return false;
+
+  try {
+    const dados = await obterJsonAppsScript({ acao: "links_site" });
+    let links = dados?.links || dados?.dados || dados?.siteLinks || null;
+
+    if (typeof links === "string") {
+      links = JSON.parse(links);
+    }
+
+    if (!links && (dados?.gammas || dados?.forums || dados?.glossaryUrl)) {
+      links = dados;
+    }
+
+    const alterou = aplicarLinksDoSite(links);
+    if (alterou) {
+      guardarLinksDoSite();
+    }
+
+    return alterou;
+  } catch {
+    return false;
   }
 }
 
@@ -2300,8 +2348,12 @@ function renderStandaloneTeamsControlPage() {
 }
 
 async function inicializarVisibilidadeRemotaDoSite() {
-  const visibilidadeRemotaOk = await carregarVisibilidadeRemotaDoSite();
-  if (!visibilidadeRemotaOk) return;
+  const [visibilidadeRemotaOk, linksRemotosOk] = await Promise.all([
+    carregarVisibilidadeRemotaDoSite(),
+    carregarLinksRemotosDoSite()
+  ]);
+
+  if (!visibilidadeRemotaOk && !linksRemotosOk) return;
 
   atualizarSuperficiesVisiveisDoSite();
 
