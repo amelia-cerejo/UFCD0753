@@ -510,6 +510,8 @@ const siteVisibilitySectionMeta = {
 const SITE_VISIBILITY_STORAGE_KEY = "ufcd0753-site-visibility-v1";
 const SITE_LINKS_STORAGE_KEY = "ufcd0753-site-links-v1";
 const APPS_SCRIPT_SPREADSHEET_GID = "1240441816";
+let siteControlItems = [];
+let siteControlItemsBuilding = false;
 let siteVisibilityRemoteLoaded = false;
 let siteVisibilityRemoteLoading = null;
 
@@ -550,6 +552,16 @@ function isSectionVisible(section) {
 
 function isItemVisible(section, key) {
   return isSectionVisible(section) && siteVisibility[section]?.[key] !== false;
+}
+
+function normalizarVisivel(value, fallback = true) {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "number") return value !== 0;
+  const text = String(value || "").trim().toLowerCase();
+  if (!text) return fallback;
+  if (["true", "sim", "s", "1", "yes", "visivel", "visível"].includes(text)) return true;
+  if (["false", "nao", "não", "n", "0", "no", "oculto"].includes(text)) return false;
+  return fallback;
 }
 
 function criarItemVisibilidade(secao, chave, titulo, url, tipo, nivel, visivel, ordem, options = {}) {
@@ -625,6 +637,85 @@ function obterConstituicaoVisibilidadeSite() {
 
 function criarMapaVisibilidadePlano() {
   return Object.fromEntries(obterConstituicaoVisibilidadeSite().map((item) => [item.chave, item.visivel !== false]));
+}
+
+function obterItemControloPadrao() {
+  siteControlItemsBuilding = true;
+  try {
+    return obterConstituicaoVisibilidadeSite();
+  } finally {
+    siteControlItemsBuilding = false;
+  }
+}
+
+function normalizarItemControlo(item) {
+  if (!item || typeof item !== "object") return null;
+  const chave = item.chave || item.key || "";
+  if (!chave) return null;
+  const linkValue = item.linkValue || item.gammaUrl || item.moodleUrl || item.urlMoodle || item.moodle || item.link || "";
+  return {
+    secao: item.secao || item.section || "",
+    chave,
+    titulo: item.titulo || item.title || "",
+    url: item.url || "",
+    gammaUrl: item.gammaUrl || "",
+    tipo: item.tipo || item.type || "",
+    nivel: item.nivel || item.level || "",
+    visivel: normalizarVisivel(item.visivel ?? item.visible, true),
+    ordem: Number(item.ordem || item.order || 0),
+    linkValue: /^https?:\/\//i.test(String(linkValue)) ? String(linkValue) : "",
+    linkLabel: item.linkLabel || "",
+    linkPlaceholder: item.linkPlaceholder || ""
+  };
+}
+
+function obterLinkItemControloRemoto(saved, fallback) {
+  const explicitLink = saved?.linkValue || saved?.gammaUrl || saved?.moodleUrl || saved?.urlMoodle || saved?.moodle || saved?.link || "";
+  if (/^https?:\/\//i.test(String(explicitLink))) return String(explicitLink);
+
+  const savedUrl = String(saved?.url || "");
+  const type = saved?.tipo || saved?.type || fallback?.tipo || fallback?.type || "";
+  const usesUrlAsExternalLink = ["conteudo", "tarefa_grupo", "tarefa_individual", "avaliacao"].includes(type);
+  if (usesUrlAsExternalLink && /^https?:\/\//i.test(savedUrl)) return savedUrl;
+
+  return fallback?.linkValue || "";
+}
+
+function atualizarItensControloSite(remoteItems = []) {
+  const savedByKey = new Map((remoteItems || [])
+    .map(normalizarItemControlo)
+    .filter(Boolean)
+    .map((item) => [item.chave, item]));
+
+  siteControlItems = obterItemControloPadrao().map((item) => {
+    const saved = savedByKey.get(item.chave);
+    if (!saved) return item;
+    return {
+      ...item,
+      url: saved.url || item.url,
+      gammaUrl: saved.gammaUrl || item.gammaUrl || "",
+      visivel: normalizarVisivel(saved.visivel, item.visivel),
+      linkValue: obterLinkItemControloRemoto(saved, item)
+    };
+  });
+
+  return siteControlItems;
+}
+
+function obterItensControloSite() {
+  if (siteControlItemsBuilding) return siteControlItems;
+  if (!siteControlItems.length) {
+    siteControlItems = obterItemControloPadrao();
+  }
+  return siteControlItems;
+}
+
+function obterItemControlo(chave) {
+  return obterItensControloSite().find((item) => item.chave === chave);
+}
+
+function obterLinkControlo(chave) {
+  return obterItemControlo(chave)?.linkValue || "";
 }
 
 function obterSecaoIndexPorSubmenu() {
@@ -1074,6 +1165,7 @@ function aplicarItemVisibilidadeRemota(item) {
 
 function aplicarItensVisibilidadeRemota(itens) {
   if (!Array.isArray(itens)) return;
+  atualizarItensControloSite(itens);
   let linksAlterados = false;
   itens.forEach((item) => {
     linksAlterados = aplicarLinkItemControlo(item) || linksAlterados;
@@ -1224,15 +1316,23 @@ function guardarLinksDoSite() {
 }
 
 function obterGammaUrl(topic) {
-  return siteLinks.gammas[topic.id] || topic.gammaUrl || "";
+  return obterLinkControlo(`conteudo-${topic.id}`) || siteLinks.gammas[topic.id] || topic.gammaUrl || "";
 }
 
 function obterGlossarioUrl() {
-  return siteLinks.glossaryUrl || glossaryUrl || "";
+  return obterLinkControlo("secao-tarefas-grupo")
+    || groupTasks.map((task) => obterLinkControlo(`tarefa-grupo-${task.title}`)).find(Boolean)
+    || siteLinks.glossaryUrl
+    || glossaryUrl
+    || "";
 }
 
 function obterForumUrl(task) {
-  return siteLinks.forums[task.id] || siteLinks.forums[task.title] || task.forumUrl || "";
+  return obterLinkControlo(`tarefa-individual-${task.title}`)
+    || siteLinks.forums[task.id]
+    || siteLinks.forums[task.title]
+    || task.forumUrl
+    || "";
 }
 
 window.addEventListener("storage", (event) => {
@@ -1642,13 +1742,24 @@ async function setupTeamsControl(root) {
       const type = event.target.dataset.linkType;
       const key = event.target.dataset.key;
       const value = event.target.value.trim();
+      let controlKey = "";
 
       if (type === "gamma" && key in siteLinks.gammas) {
         siteLinks.gammas[key] = value;
+        controlKey = `conteudo-${key}`;
       } else if (type === "glossary") {
         siteLinks.glossaryUrl = value;
+        controlKey = "secao-tarefas-grupo";
       } else if (type === "forum" && key) {
         siteLinks.forums[key] = value;
+        const task = individualTasks.find((item) => item.id === key || item.title === key);
+        controlKey = task ? `tarefa-individual-${task.title}` : key;
+      }
+
+      const controlItem = controlKey ? obterItemControlo(controlKey) : null;
+      if (controlItem) {
+        controlItem.linkValue = value;
+        controlItem.gammaUrl = value;
       }
 
       guardarLinksDoSite();
