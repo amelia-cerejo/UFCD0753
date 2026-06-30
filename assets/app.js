@@ -1327,11 +1327,16 @@ function obterGlossarioUrl() {
     || "";
 }
 
+function obterUrlTopicoForum(valor) {
+  const url = String(valor || "").trim();
+  return /^https:\/\/fad\.iefp\.pt\/mod\/forum\/discuss\.php\?d=\d+/i.test(url) ? url : "";
+}
+
 function obterForumUrl(task) {
-  return obterLinkControlo(`tarefa-individual-${task.title}`)
-    || siteLinks.forums[task.id]
-    || siteLinks.forums[task.title]
-    || task.forumUrl
+  return obterUrlTopicoForum(obterLinkControlo(`tarefa-individual-${task.title}`))
+    || obterUrlTopicoForum(siteLinks.forums[task.id])
+    || obterUrlTopicoForum(siteLinks.forums[task.title])
+    || obterUrlTopicoForum(task.forumUrl)
     || "";
 }
 
@@ -2560,11 +2565,13 @@ function renderStandaloneTeamsControlPage() {
   renderTeamsControl(root, { compact: false, publicView: false });
 }
 
-async function inicializarVisibilidadeRemotaDoSite() {
+async function inicializarVisibilidadeRemotaDoSite(options = {}) {
   const visibilidadeRemotaOk = await carregarVisibilidadeRemotaDoSite();
   if (!visibilidadeRemotaOk) return;
 
-  atualizarSuperficiesVisiveisDoSite();
+  if (options.render !== false) {
+    atualizarSuperficiesVisiveisDoSite();
+  }
 
   const teamsRoot = document.getElementById("activity-root") || document.getElementById("teams-control-root");
   if (teamsRoot) {
@@ -2572,22 +2579,34 @@ async function inicializarVisibilidadeRemotaDoSite() {
   }
 }
 
-carregarVisibilidadeDoSite();
-carregarLinksDoSite();
-renderContentMenus();
-renderActivityMenus();
-renderEvaluationMenus();
-renderResourceMenus();
-setupMenu();
-setupFloatingActions();
-renderHomeCards();
-renderConteudosIndex();
-renderTopicPage();
-renderActivityPage();
-renderResourcePage();
-renderStandaloneTeamsControlPage();
-setupModals();
-manterMenuAtivoAberto();
-abrirMenuPeloHashDoIndex();
-inicializarVisibilidadeRemotaDoSite();
+async function inicializarSite() {
+  carregarVisibilidadeDoSite();
+  carregarLinksDoSite();
+  const pageNeedsRemoteFirst = Boolean(document.getElementById("activity-root") || document.getElementById("topic-root") || document.getElementById("resource-root"));
+  if (pageNeedsRemoteFirst) {
+    await inicializarVisibilidadeRemotaDoSite({ render: false });
+  }
+
+  renderContentMenus();
+  renderActivityMenus();
+  renderEvaluationMenus();
+  renderResourceMenus();
+  setupMenu();
+  setupFloatingActions();
+  renderHomeCards();
+  renderConteudosIndex();
+  renderTopicPage();
+  renderActivityPage();
+  renderResourcePage();
+  renderStandaloneTeamsControlPage();
+  setupModals();
+  manterMenuAtivoAberto();
+  abrirMenuPeloHashDoIndex();
+
+  if (!pageNeedsRemoteFirst) {
+    inicializarVisibilidadeRemotaDoSite();
+  }
+}
+
+inicializarSite();
 
