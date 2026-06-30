@@ -2169,7 +2169,7 @@ function renderActivityPage() {
                   </div>
 
                   <div class="embed-fallback resource-action-row align-right">
-                    ${obterGlossarioUrl() ? `<a class="small-button orange" href="${obterGlossarioUrl()}">Abrir glossário</a>` : ""}
+                    ${obterGlossarioUrl() ? `<a class="small-button orange" href="${obterGlossarioUrl()}" target="_top">Abrir glossário</a>` : ""}
                   </div>
                 </div>
               </details>
@@ -2231,7 +2231,7 @@ function renderActivityPage() {
                   </div>
 
                   <div class="embed-fallback resource-action-row align-right">
-                    ${obterForumUrl(task) ? `<a class="small-button orange" href="${obterForumUrl(task)}">Abrir tarefa</a>` : ""}
+                    ${obterForumUrl(task) ? `<a class="small-button orange" href="${obterForumUrl(task)}" target="_top">Abrir tarefa</a>` : ""}
                   </div>
                 </div>
               </details>
