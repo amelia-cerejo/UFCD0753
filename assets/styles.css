@@ -2908,6 +2908,10 @@ body.menu-open .sidebar {
   margin-bottom: 14px;
 }
 
+.evaluation-direct-page {
+  padding-top: 76px;
+}
+
 .evaluation-frame {
   display: block;
   width: 100%;
