@@ -966,7 +966,18 @@ function renderEvaluationMenus() {
       return;
     }
 
-    const currentEvaluation = document.body.dataset.activity || "";
+    const evaluationIds = {
+      diagnostica: "avaliacao-diagnostica",
+      "resultados-diagnostica": "resultados-diagnostica",
+      sumativa: "avaliacao-sumativa",
+      "entre-pares": "avaliacao-entre-pares",
+      "autoavaliacao-final": "autoavaliacao-final",
+      formacao: "avaliacao-formacao"
+    };
+    const currentEvaluation = document.body.dataset.activity
+      || evaluationIds[document.body.dataset.evaluation]
+      || document.body.dataset.evaluation
+      || "";
     menu.innerHTML = evaluations
       .filter((evaluation) => !evaluation.parentId && isItemVisible("avaliacao", evaluation.id))
       .map((evaluation) => {
