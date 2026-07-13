@@ -1,4 +1,4 @@
-﻿const topics = [
+const topics = [
   {
     id: "introducao",
     title: "Introdução",
@@ -172,8 +172,8 @@ const activities = [
   },
   {
     id: "projeto-final-apresentacao",
-    title: "Evidências - Projetos finais",
-    menuTitle: "Evidências - Projetos finais",
+    title: "Kit Digital",
+    menuTitle: "Kit Digital",
     intro: "Área para organizar evidências e projetos finais, incluindo o Kit Digital colaborativo no Canva.",
     url: "atividades/projeto-final-apresentacao.html",
     focus: "Apresentação colaborativa",
@@ -2306,7 +2306,7 @@ function renderActivityPage() {
       <section class="section task-page-section">
         <div class="section-inner">
           <div class="section-heading task-page-heading">
-            <p class="eyebrow">Evidências - Projetos finais</p>
+            <p class="eyebrow">Kit Digital</p>
             <h1>Kit Digital - Proteger e Organizar o Computador</h1>
             <p class="lead">O projeto final da UFCD 0753 será desenvolvido em grupo, através de uma apresentação colaborativa no Canva.</p>
             <div class="inline-actions">
