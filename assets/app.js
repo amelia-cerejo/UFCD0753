@@ -546,9 +546,7 @@ const siteVisibilitySectionMeta = {
   tarefasIndividuais: { secao: "tarefas_individuais", chave: "secao-tarefas-individuais", titulo: "Tarefas individuais", tipo: "secao", ordem: 60 }
 };
 
-const SITE_VISIBILITY_STORAGE_KEY = "ufcd0753-site-visibility-v1";
-const SITE_LINKS_STORAGE_KEY = "ufcd0753-site-links-v1";
-const APPS_SCRIPT_SPREADSHEET_GID = "1240441816";
+const APPS_SCRIPT_SPREADSHEET_GID = "381610413";
 let siteControlItems = [];
 let siteControlItemsBuilding = false;
 let siteVisibilityRemoteLoaded = false;
@@ -1129,11 +1127,7 @@ function saveControlState(state) {
 }
 
 function carregarVisibilidadeDoSite() {
-  try {
-    aplicarVisibilidadeDoSite(JSON.parse(localStorage.getItem(SITE_VISIBILITY_STORAGE_KEY) || "{}"));
-  } catch {
-    // Mantém a configuração inicial quando o browser não permite ler localStorage.
-  }
+  // A visibilidade publica deve vir sempre da sheet para evitar estados locais desatualizados.
 }
 
 function aplicarVisibilidadeDoSite(saved) {
@@ -1236,7 +1230,6 @@ function aplicarItensVisibilidadeRemota(itens) {
     linksAlterados = aplicarLinkItemControlo(item) || linksAlterados;
     aplicarItemVisibilidadeRemota(item);
   });
-  if (linksAlterados) guardarLinksDoSite();
 }
 
 function atualizarSuperficiesVisiveisDoSite() {
@@ -1264,23 +1257,11 @@ function atualizarSuperficiesVisiveisDoSite() {
 }
 
 function guardarVisibilidadeDoSite() {
-  try {
-    localStorage.setItem(SITE_VISIBILITY_STORAGE_KEY, JSON.stringify({
-      secoes: siteVisibilitySections,
-      ...siteVisibility
-    }));
-  } catch {
-    // A página continua funcional mesmo que não seja possível guardar no browser.
-  }
+  // A sheet e a Apps Script sao a fonte de verdade da visibilidade.
 }
 
 function carregarLinksDoSite() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(SITE_LINKS_STORAGE_KEY) || "{}");
-    aplicarLinksDoSite(saved);
-  } catch {
-    // Mantém os valores de base quando não é possível ler localStorage.
-  }
+  // As ligacoes externas devem ser carregadas da sheet juntamente com a visibilidade.
 }
 
 function aplicarLinksDoSite(links) {
@@ -1373,11 +1354,7 @@ function aplicarLinksDoSite(links) {
 }
 
 function guardarLinksDoSite() {
-  try {
-    localStorage.setItem(SITE_LINKS_STORAGE_KEY, JSON.stringify(siteLinks));
-  } catch {
-    // A página continua funcional mesmo que não seja possível guardar no browser.
-  }
+  // As ligacoes so ficam definitivas quando sao enviadas para a Apps Script/sheet.
 }
 
 function obterGammaUrl(topic) {
@@ -1405,22 +1382,7 @@ function obterForumUrl(task) {
     || "";
 }
 
-window.addEventListener("storage", (event) => {
-  if (!event.newValue) return;
-
-  try {
-    if (event.key === SITE_VISIBILITY_STORAGE_KEY) {
-      aplicarVisibilidadeDoSite(JSON.parse(event.newValue));
-      atualizarSuperficiesVisiveisDoSite();
-    }
-
-    if (event.key === SITE_LINKS_STORAGE_KEY && aplicarLinksDoSite(JSON.parse(event.newValue))) {
-      atualizarSuperficiesVisiveisDoSite();
-    }
-  } catch {
-    // Mantém o estado atual se a alteração recebida não puder ser lida.
-  }
-});
+// A sincronizacao entre paginas e feita pela sheet/Apps Script, nao por localStorage.
 
 async function carregarVisibilidadeRemotaDoSite() {
   if (!APPS_SCRIPT_WEB_APP_URL) return false;
@@ -1431,14 +1393,12 @@ async function carregarVisibilidadeRemotaDoSite() {
     .then((dados) => {
       if (dados?.sucesso && Array.isArray(dados.itens)) {
         aplicarItensVisibilidadeRemota(dados.itens);
-        guardarVisibilidadeDoSite();
         siteVisibilityRemoteLoaded = true;
         return true;
       }
 
       if (dados?.sucesso && dados.visibilidade) {
         aplicarVisibilidadeDoSite(dados.visibilidade);
-        guardarVisibilidadeDoSite();
         siteVisibilityRemoteLoaded = true;
         return true;
       }
@@ -1775,8 +1735,6 @@ async function setupTeamsControl(root) {
     if (saveVisibilityButton) {
       const controlStatus = root.querySelector("[data-site-control-status]");
       if (controlStatus) controlStatus.textContent = "A enviar constituição e ligações do site para a Apps Script...";
-      guardarVisibilidadeDoSite();
-      guardarLinksDoSite();
       await guardarVisibilidadeRemotaDoSite();
       if (controlStatus) {
         controlStatus.textContent = `Pedido enviado para a Apps Script: ${obterConstituicaoVisibilidadeSite().length} itens e ligações do site. Confirma as folhas de controlo.`;
@@ -1801,10 +1759,9 @@ async function setupTeamsControl(root) {
       const key = event.target.dataset.key;
       if (siteVisibility[section] && key in siteVisibility[section]) {
         siteVisibility[section][key] = event.target.checked;
-        guardarVisibilidadeDoSite();
         guardarVisibilidadeRemotaDoSite();
         const controlStatus = root.querySelector("[data-site-control-status]");
-        if (controlStatus) controlStatus.textContent = "Visibilidade atualizada. As páginas abertas do site recebem a alteração; se necessário, recarrega a página para confirmar.";
+        if (controlStatus) controlStatus.textContent = "Visibilidade enviada para a Apps Script. Recarrega a pagina para confirmar o estado vindo da sheet.";
       }
     }
 
@@ -1831,10 +1788,8 @@ async function setupTeamsControl(root) {
         controlItem.linkValue = value;
         controlItem.gammaUrl = value;
       }
-
-      guardarLinksDoSite();
       const controlStatus = root.querySelector("[data-site-control-status]");
-      if (controlStatus) controlStatus.textContent = "Ligação guardada neste browser. Usa o botão Guardar para enviar para a Apps Script.";
+      if (controlStatus) controlStatus.textContent = "Ligacao preparada. Usa o botao Guardar para enviar para a Apps Script/sheet.";
     }
   });
 }
@@ -2890,8 +2845,7 @@ async function inicializarVisibilidadeRemotaDoSite(options = {}) {
 }
 
 async function inicializarSite() {
-  carregarVisibilidadeDoSite();
-  carregarLinksDoSite();
+  await inicializarVisibilidadeRemotaDoSite({ render: false });
 
   renderContentMenus();
   renderActivityMenus();
@@ -2908,8 +2862,6 @@ async function inicializarSite() {
   setupModals();
   manterMenuAtivoAberto();
   abrirMenuPeloHashDoIndex();
-
-  inicializarVisibilidadeRemotaDoSite();
 }
 
 inicializarSite();
