@@ -632,7 +632,7 @@ function obterConstituicaoVisibilidadeSite() {
 
   adicionarSecao("menuPrincipal");
   mainMenuItems.forEach((item, index) => {
-    const url = item.key === "inicio" ? "index.html#inicio" : item.key === "eportfolio" ? "atividades/identidade-visual.html" : `index.html#${item.key}`;
+    const url = item.key === "inicio" ? "index.html#inicio" : item.key === "eportfolio" ? "e-portefolios.html" : `index.html#${item.key}`;
     adicionarItem("menuPrincipal", `menu-${item.key}`, item.label, url, "menu", 2 + index);
   });
 
@@ -767,16 +767,21 @@ function obterSecaoIndexPorSubmenu() {
   };
 }
 
-function abrirSubmenuPrincipal(submenuId) {
+function abrirSubmenuPrincipal(submenuId, options = {}) {
+  const { toggle = false } = options;
+  const submenuAtual = document.getElementById(submenuId);
+  const deveAbrir = !toggle || !submenuAtual?.classList.contains("open");
+
   document.querySelectorAll(".nav-parent").forEach((button) => {
-    button.setAttribute("aria-expanded", String(button.getAttribute("aria-controls") === submenuId));
+    button.setAttribute("aria-expanded", String(
+      deveAbrir && button.getAttribute("aria-controls") === submenuId
+    ));
   });
 
   document.querySelectorAll(".submenu").forEach((submenu) => {
-    submenu.classList.toggle("open", submenu.id === submenuId);
+    submenu.classList.toggle("open", deveAbrir && submenu.id === submenuId);
   });
 }
-
 function abrirMenuPeloHashDoIndex() {
   if (document.body.dataset.page !== "home") return;
 
@@ -790,8 +795,6 @@ function abrirMenuPeloHashDoIndex() {
 }
 
 function setupMenu() {
-  const homeSectionBySubmenu = obterSecaoIndexPorSubmenu();
-
   document.querySelectorAll(".nav-parent").forEach((button) => {
     button.setAttribute("aria-expanded", "false");
   });
@@ -802,23 +805,9 @@ function setupMenu() {
   document.querySelectorAll(".nav-parent").forEach((button) => {
     button.addEventListener("click", () => {
       const submenuId = button.getAttribute("aria-controls");
-
-      if (document.body.dataset.page !== "home" && homeSectionBySubmenu[submenuId]) {
-        window.location.href = `${getBasePath()}index.html#${homeSectionBySubmenu[submenuId]}`;
-        return;
-      }
-
-      const submenu = document.getElementById(submenuId);
-      if (submenu) abrirSubmenuPrincipal(submenuId);
-
-      if (document.body.dataset.page === "home" && homeSectionBySubmenu[submenuId]) {
-        const section = document.getElementById(homeSectionBySubmenu[submenuId]);
-        section?.scrollIntoView({ behavior: "smooth", block: "start" });
-        history.replaceState(null, "", `#${homeSectionBySubmenu[submenuId]}`);
-      }
+      if (submenuId) abrirSubmenuPrincipal(submenuId, { toggle: true });
     });
   });
-
   const toggle = document.querySelector(".menu-toggle");
   const sidebar = document.querySelector(".sidebar");
   const fecharMenu = () => {
